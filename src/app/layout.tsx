@@ -4,6 +4,7 @@ import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
+import Providers from "@/components/query-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
@@ -19,7 +20,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={cn(inter.className, "antialised min-h-screen")}>
       <body className="min-h-full flex flex-col">
-        <TooltipProvider>{children}</TooltipProvider> <Toaster />
+        <Providers>
+          <TooltipProvider>{children}</TooltipProvider> <Toaster />
+        </Providers>
       </body>
     </html>
   );

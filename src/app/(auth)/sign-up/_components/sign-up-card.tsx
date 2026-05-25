@@ -15,44 +15,26 @@ import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Field, FieldError, FieldGroup } from "@/components/ui/field";
-import { toast } from "sonner";
 import Link from "next/link";
-
-const formSchema = z.object({
-  name: z.string().trim().min(1, "Name is required"),
-  email: z.email("Invalid email address").trim().min(1, "Email is required"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .max(256, "Password is too long"),
-});
-
-const onSubmit = (data: z.infer<typeof formSchema>) => {
-  toast("You submitted the following values:", {
-    description: (
-      <pre className="mt-2 w-[320px] overflow-x-auto rounded-md bg-code p-4 text-code-foreground">
-        <code>{JSON.stringify(data, null, 2)}</code>
-      </pre>
-    ),
-    position: "bottom-right",
-    classNames: {
-      content: "flex flex-col gap-2",
-    },
-    style: {
-      "--border-radius": "calc(var(--radius)  + 4px)",
-    } as React.CSSProperties,
-  });
-};
+import { registerSchema } from "@/schema";
+import { useRegister } from "../../api/use-register";
 
 const SignUpCard = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const { mutate } = useRegister();
+
+  const form = useForm<z.infer<typeof registerSchema>>({
+    resolver: zodResolver(registerSchema),
     defaultValues: {
       name: "",
       email: "",
       password: "",
     },
   });
+
+  const onSubmit = (values: z.infer<typeof registerSchema>) => {
+    mutate({ json: values });
+  };
+
   return (
     <Card className="w-full h-full md:w-121.75 border-none shadow-md">
       <CardHeader className="flex flex-col items-center justify-center text-center p-7">

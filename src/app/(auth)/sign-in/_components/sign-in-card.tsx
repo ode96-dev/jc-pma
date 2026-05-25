@@ -9,41 +9,24 @@ import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Field, FieldError, FieldGroup } from "@/components/ui/field";
-import { toast } from "sonner";
-
-const formSchema = z.object({
-  email: z.email("Invalid email address").trim().min(1, "Email is required"),
-  password: z
-    .string()
-    .min(1, "Password must be at least 8 characters")
-    .max(256, "Password is too long"),
-});
-
-const onSubmit = (data: z.infer<typeof formSchema>) => {
-  toast("You submitted the following values:", {
-    description: (
-      <pre className="mt-2 w-[320px] overflow-x-auto rounded-md bg-code p-4 text-code-foreground">
-        <code>{JSON.stringify(data, null, 2)}</code>
-      </pre>
-    ),
-    position: "bottom-right",
-    classNames: {
-      content: "flex flex-col gap-2",
-    },
-    style: {
-      "--border-radius": "calc(var(--radius)  + 4px)",
-    } as React.CSSProperties,
-  });
-};
+import { loginSchema } from "@/schema";
+import { useLogin } from "../../api/use-login";
 
 const SignInCard = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const { mutate } = useLogin();
+
+  const form = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
+
+  const onSubmit = (values: z.infer<typeof loginSchema>) => {
+    mutate({ json: values });
+  };
+
   return (
     <Card className="w-full h-full md:w-121.75 border-none shadow-md">
       <CardHeader className="flex items-center justify-center text-center p-7">
