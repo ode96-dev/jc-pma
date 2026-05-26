@@ -5,9 +5,15 @@ import { createAdminClient } from "@/lib/app-write";
 import { ID } from "node-appwrite";
 import { deleteCookie, setCookie } from "hono/cookie";
 import "dotenv/config";
+import { sessionMiddleware } from "@/lib/session-middleware";
 
 
 const app = new Hono()
+    .get("/current", sessionMiddleware, (c) => {
+        const user = c.get("user")
+
+        return c.json({ data: user })
+    })
     .post("/login", zValidator("json", loginSchema), async (c) => {
         const { email, password } = c.req.valid("json");
 
@@ -43,8 +49,13 @@ const app = new Hono()
         })
 
         return c.json({ success: "ok" });
-    }).post("/logout", (c) => {
+    }).post("/logout", sessionMiddleware, async (c) => {
+        const account = c.get("account");
+
+
         deleteCookie(c, process.env.AUTH_COOKIE!)
+
+        await account.deleteSession("current")
 
         return c.json({ success: "ok" })
     });
