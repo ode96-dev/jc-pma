@@ -1,5 +1,5 @@
 "use client";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { usePathname } from "next/dist/client/components/navigation";
 import Image from "next/image";
 import Link from "next/link";

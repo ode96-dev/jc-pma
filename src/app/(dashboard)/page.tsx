@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
-import { getCurrent } from "./(auth)/_actions/actions";
-import { UserButton } from "./(auth)/_components/user-button";
+import { getCurrent } from "../(auth)/_actions/actions";
 
 const Home = async () => {
   const user = await getCurrent();
@@ -8,11 +7,7 @@ const Home = async () => {
 
   if (!user) redirect("/sign-in");
 
-  return (
-    <div>
-      <UserButton />
-    </div>
-  );
+  return <div>this is home</div>;
 };
 
 export default Home;
