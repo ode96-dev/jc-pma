@@ -1,15 +1,52 @@
 import { loginSchema, registerSchema } from "@/schema";
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
+import { createAdminClient } from "@/lib/app-write";
+import { ID } from "node-appwrite";
+import { deleteCookie, setCookie } from "hono/cookie";
+import "dotenv/config";
+
 
 const app = new Hono()
-    .post("/login", zValidator("json", loginSchema), (c) => {
+    .post("/login", zValidator("json", loginSchema), async (c) => {
         const { email, password } = c.req.valid("json");
+
+        const { account } = await createAdminClient();
+
+        const session = await account.createEmailPasswordSession(email, password)
+
+        setCookie(c, process.env.AUTH_COOKIE!, session.secret, {
+            path: "/",
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict",
+            maxAge: 60 * 60 * 24 * 30
+        })
+
         return c.json({ success: "ok" });
     })
-    .post("/register", zValidator("json", registerSchema), (c) => {
+    .post("/register", zValidator("json", registerSchema), async (c) => {
         const { name, email, password } = c.req.valid("json");
+
+        const { account } = await createAdminClient();
+
+        await account.create(ID.unique(), email, password, name);
+
+        const session = await account.createEmailPasswordSession(email, password)
+
+        setCookie(c, process.env.AUTH_COOKIE!, session.secret, {
+            path: "/",
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict",
+            maxAge: 60 * 60 * 24 * 30
+        })
+
         return c.json({ success: "ok" });
+    }).post("/logout", (c) => {
+        deleteCookie(c, process.env.AUTH_COOKIE!)
+
+        return c.json({ success: "ok" })
     });
 
 export default app;
