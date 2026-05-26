@@ -17,10 +17,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Field, FieldError, FieldGroup } from "@/components/ui/field";
 import Link from "next/link";
 import { registerSchema } from "@/schema";
-import { useRegister } from "../../api/use-register";
+import { useRegister } from "../../_api/use-register";
 
 const SignUpCard = () => {
-  const { mutate } = useRegister();
+  const { mutate, isPending } = useRegister();
 
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -66,7 +66,7 @@ const SignUpCard = () => {
                     required
                     type="text"
                     placeholder="Enter name"
-                    disabled={false}
+                    disabled={isPending}
                   />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
@@ -84,7 +84,7 @@ const SignUpCard = () => {
                     required
                     type="email"
                     placeholder="Enter email address"
-                    disabled={false}
+                    disabled={isPending}
                   />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
@@ -102,7 +102,7 @@ const SignUpCard = () => {
                     required
                     type="password"
                     placeholder="Enter password"
-                    disabled={false}
+                    disabled={isPending}
                     min={8}
                     max={256}
                   />
@@ -114,7 +114,7 @@ const SignUpCard = () => {
             />
           </FieldGroup>
 
-          <Button disabled={false} size="lg" className="w-full h-14">
+          <Button disabled={isPending} size="lg" className="w-full h-14">
             Sign Up
           </Button>
         </form>
@@ -124,7 +124,7 @@ const SignUpCard = () => {
       </div>
       <CardContent className="p-7 flex flex-col gap-y-4">
         <Button
-          disabled={false}
+          disabled={isPending}
           variant="secondary"
           size="lg"
           className="w-full h-14"
@@ -133,7 +133,7 @@ const SignUpCard = () => {
           Login with Google
         </Button>
         <Button
-          disabled={false}
+          disabled={isPending}
           variant="secondary"
           size="lg"
           className="w-full h-14"

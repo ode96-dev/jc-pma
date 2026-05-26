@@ -10,10 +10,10 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Field, FieldError, FieldGroup } from "@/components/ui/field";
 import { loginSchema } from "@/schema";
-import { useLogin } from "../../api/use-login";
+import { useLogin } from "../../_api/use-login";
 
 const SignInCard = () => {
-  const { mutate } = useLogin();
+  const { mutate, isPending } = useLogin();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -49,7 +49,7 @@ const SignInCard = () => {
                     required
                     type="email"
                     placeholder="Enter email address"
-                    disabled={false}
+                    disabled={isPending}
                   />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
@@ -67,7 +67,7 @@ const SignInCard = () => {
                     required
                     type="password"
                     placeholder="Enter password"
-                    disabled={false}
+                    disabled={isPending}
                     min={8}
                     max={256}
                   />
@@ -79,7 +79,7 @@ const SignInCard = () => {
             />
           </FieldGroup>
 
-          <Button disabled={false} size="lg" className="w-full h-14">
+          <Button disabled={isPending} size="lg" className="w-full h-14">
             Login
           </Button>
         </form>
@@ -89,7 +89,7 @@ const SignInCard = () => {
       </div>
       <CardContent className="p-7 flex flex-col gap-y-4">
         <Button
-          disabled={false}
+          disabled={isPending}
           variant="secondary"
           size="lg"
           className="w-full h-14"
@@ -98,7 +98,7 @@ const SignInCard = () => {
           Login with Google
         </Button>
         <Button
-          disabled={false}
+          disabled={isPending}
           variant="secondary"
           size="lg"
           className="w-full h-14"
